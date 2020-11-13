@@ -1,10 +1,10 @@
-name: Make distribution
+name: Distribution Test
 
 on: [push]
 
 jobs:
 
-  do:
+  dist:
     name: Make distribution using Dist::Inkt
     runs-on: ubuntu-latest
     steps:
