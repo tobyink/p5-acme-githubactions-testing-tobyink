@@ -47,6 +47,9 @@ jobs:
         exclude:
            - os: windows-latest
              perl: '5.8'
+        include:
+           - os: ubuntu-latest
+             perl: '5.22'
     steps:
       - name: Get dist artifact
         uses: actions/download-artifact@v2
