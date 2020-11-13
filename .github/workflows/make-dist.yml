@@ -25,7 +25,7 @@ jobs:
           cpanm -n Dist::Inkt::Profile::TOBYINK
       - name: Make distribution
         run: |
-          distinkt-dist --TRAVIS --targetdir=build
+          ~/perl5/bin/distinkt-dist --TRAVIS --targetdir=build
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
