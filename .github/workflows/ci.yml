@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Fetch ~/perl5 from cache
+      - name: Cache ~/perl5
         uses: actions/cache@v2
         with:
           key: ${{ runner.os }}-dist-locallib
