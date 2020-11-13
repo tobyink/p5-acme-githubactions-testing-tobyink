@@ -37,7 +37,7 @@ jobs:
             build
 
   test:
-    name: Perl ${{ matrix.perl }} on ${{ matrix.os }}
+    name: ${{ matrix.joblabel }}Perl ${{ matrix.perl }} on ${{ matrix.os }}
     needs: dist
     runs-on: ${{ matrix.os }}
     strategy:
@@ -49,7 +49,9 @@ jobs:
              perl: '5.8'
         include:
            - os: ubuntu-latest
-             perl: '5.22'
+             perl: '5.30'
+             coverage: true
+             joblabel: 'Coverage: '
     steps:
       - name: Get dist artifact
         uses: actions/download-artifact@v2
@@ -66,47 +68,35 @@ jobs:
       - name: Make
         run: make
       - name: Test (without coverage)
+        if: ${{ !matrix.coverage }}
         env:
           EXTENDED_TESTING: 1
         run: |
           prove -b -r "t"
-
-  coverage:
-    name: Coverage Reports
-    needs: dist
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get dist artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-      - name: Set up perl
-        uses: shogo82148/actions-setup-perl@v1
-        with:
-          perl-version: ${{ matrix.perl }}
-      - name: Configure
-        run: perl Makefile.PL
-      - name: Install dependencies
+      - name: Install dependencies for coverage reports
+        if: ${{ matrix.coverage }}
         run: |
-          cpanm -n --installdeps --with-recommends --with-suggests .
+          cpanm Devel::Cover
           cpanm Devel::Cover::Report::Coveralls
           cpanm Devel::Cover::Report::Codecov
-      - name: Make
-        run: make
       - name: Clean Coverage Data
+        if: ${{ matrix.coverage }}
         run: cover -delete
-      - name: Test
+      - name: Test (with coverage)
+        if: ${{ matrix.coverage }}
         env:
           EXTENDED_TESTING: 1
           HARNESS_PERL_SWITCHES: -MDevel::Cover
         run: |
           prove -b -r "t"
       - name: Coveralls.io Report
+        if: ${{ matrix.coverage }}
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         run: |
           cover -report coveralls
       - name: Codecov.io Report
+        if: ${{ matrix.coverage }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
