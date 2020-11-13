@@ -80,7 +80,7 @@ jobs:
         os: [ 'ubuntu', 'macos', 'windows' ]
         perl: [ '5.8', '5.10', '5.12', '5.14', '5.16', '5.18', '5.20', '5.22', '5.24', '5.26', '5.28', '5.30', '5.32' ]
         coverage: [ false ]
-        minimal: [ false ]
+        extra_dependencies: [ true ]
         exclude:
           - { os: 'windows', perl: '5.8' } 
           - { os: 'windows', perl: '5.10' } 
@@ -106,18 +106,16 @@ jobs:
       - name: Install dependencies
         run: cpanm -n --installdeps ./build
       - name: Install extra dependencies
-        if: ${{ matrix.coverage || !matrix.minimal }}
+        if: ${{ matrix.extra_dependencies }}
         run: cpanm -n --installdeps --with-recommends --with-suggests ./build
       - name: Make
         working-directory: ./build/
         run: make
       - name: Test (without coverage)
         if: ${{ !matrix.coverage }}
-        env:
-          EXTENDED_TESTING: 1
         working-directory: ./build/
         run: |
-          prove -b -r "t"
+          EXTENDED_TESTING=1 prove -b -r "t"
       - name: Install dependencies for coverage reports
         if: ${{ matrix.coverage }}
         run: |
@@ -130,23 +128,17 @@ jobs:
         run: cover -delete
       - name: Test (with coverage)
         if: ${{ matrix.coverage }}
-        env:
-          EXTENDED_TESTING: 1
-          HARNESS_PERL_SWITCHES: -MDevel::Cover
+        env: { HARNESS_PERL_SWITCHES: '-MDevel::Cover' }
         working-directory: ./build/
         run: |
-          prove -b -r "t"
+          EXTENDED_TESTING=1 prove -b -r "t"
       - name: Coveralls.io report
         if: ${{ matrix.coverage }}
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        env: { COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }} }
         working-directory: ./build/
-        run: |
-          cover -report coveralls
+        run: cover -report coveralls
       - name: Codecov.io report
         if: ${{ matrix.coverage }}
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        env: { CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} }
         working-directory: ./build/
-        run: |
-          cover -report codecov
+        run: cover -report codecov
