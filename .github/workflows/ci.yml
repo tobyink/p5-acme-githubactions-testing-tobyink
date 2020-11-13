@@ -129,7 +129,7 @@ jobs:
       - name: Test (with coverage)
         if: ${{ matrix.coverage }}
         env: 
-          HARNESS_PERL_SWITCHES: -MDevel::Cover'
+          HARNESS_PERL_SWITCHES: -MDevel::Cover
         working-directory: ./build/
         run: |
           EXTENDED_TESTING=1 prove -b -r "t"
