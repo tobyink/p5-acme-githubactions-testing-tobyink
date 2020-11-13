@@ -54,7 +54,7 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
       - name: Show tree
-        run: tree
+        run: find | sort
       - name: Configure
         working-directory: ./build
         run: perl Makefile.PL
