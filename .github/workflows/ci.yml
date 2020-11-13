@@ -38,14 +38,14 @@ jobs:
 
   test:
     name: Perl ${{ matrix.perl }} on ${{ matrix.os }}
-    needs: build
+    needs: dist
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ 'ubuntu-latest', 'macos-latest' ]
         perl: [ '5.8', '5.30' ]
     steps:
-      - name: Get build artifact
+      - name: Get dist artifact
         uses: actions/download-artifact@v2
         with:
           name: build
