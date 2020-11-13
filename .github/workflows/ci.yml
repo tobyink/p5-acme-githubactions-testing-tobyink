@@ -76,10 +76,10 @@ jobs:
       - name: Install dependencies for coverage reports
         if: ${{ matrix.coverage }}
         run: |
-          cpanm Devel::Cover
-          cpanm Devel::Cover::Report::Coveralls
-          cpanm Devel::Cover::Report::Codecov
-      - name: Clean Coverage Data
+          cpanm -n Devel::Cover
+          cpanm -n Devel::Cover::Report::Coveralls
+          cpanm -n Devel::Cover::Report::Codecov
+      - name: Clean coverage data
         if: ${{ matrix.coverage }}
         run: cover -delete
       - name: Test (with coverage)
@@ -89,13 +89,13 @@ jobs:
           HARNESS_PERL_SWITCHES: -MDevel::Cover
         run: |
           prove -b -r "t"
-      - name: Coveralls.io Report
+      - name: Coveralls.io report
         if: ${{ matrix.coverage }}
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         run: |
           cover -report coveralls
-      - name: Codecov.io Report
+      - name: Codecov.io report
         if: ${{ matrix.coverage }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
