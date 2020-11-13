@@ -1,0 +1,30 @@
+name: Make distribution
+
+on: [push]
+
+jobs:
+
+  do:
+    name: Make distribution using Dist::Inkt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Perl Version
+        run: |
+          perl -V
+      - name: Install cpanm
+        run: |
+          curl -L https://cpanmin.us | perl - --sudo App::cpanminus
+      - name: Install Dist::Inkt
+        run: |
+          cpanm Dist::Inkt::Profile::TOBYINK
+      - name: Make distribution
+        run: |
+          distinkt-dist --TRAVIS --targetdir=build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: |
+            build
