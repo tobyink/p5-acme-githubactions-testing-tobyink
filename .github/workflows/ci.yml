@@ -62,15 +62,11 @@ jobs:
       - name: Show tree
         run: find | sort
       - name: Configure
-        working-directory: ./build
         run: perl Makefile.PL
       - name: Install dependencies
-        working-directory: ./build
         run: cpanm --installdeps -n .
       - name: Make
-        working-directory: ./build
         run: make
       - name: Test
-        working-directory: ./build
         run: |
           prove -b -r "t"
