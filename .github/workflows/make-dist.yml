@@ -23,6 +23,7 @@ jobs:
       - name: Install Dist::Inkt
         run: |
           cpanm -n Dist::Inkt::Profile::TOBYINK
+          cpanm -n File::chdir
       - name: Make distribution
         run: |
           ~/perl5/bin/distinkt-dist --TRAVIS --targetdir=build
