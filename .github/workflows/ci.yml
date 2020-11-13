@@ -36,6 +36,34 @@ jobs:
           path: |
             ./
 
+  inspect:
+    name: Inspect distribution
+    needs: dist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get dist artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+      - name: Install dependencies
+        run: |
+          sudo apt install tree
+      - name: Tree
+        run: |
+          tree build
+      - name: Changes
+        run: cat build/Changes
+      - name: COPYRIGHT
+        run: cat build/COPYRIGHT
+      - name: CREDITS
+        run: cat build/CREDITS
+      - name: doap.ttl
+        run: cat build/doap.ttl
+      - name: META.json
+        run: cat build/META.json
+      - name: META.yml
+        run: cat build/META.yml
+
   test:
     name: Perl ${{ matrix.perl }} on ${{ matrix.os }} ${{ matrix.joblabel }}
     needs: dist
