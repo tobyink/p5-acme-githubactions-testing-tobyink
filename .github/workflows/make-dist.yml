@@ -18,7 +18,7 @@ jobs:
           curl -L https://cpanmin.us | perl - --sudo App::cpanminus
       - name: Install Dist::Inkt
         run: |
-          cpanm Dist::Inkt::Profile::TOBYINK
+          cpanm -n Dist::Inkt::Profile::TOBYINK
       - name: Make distribution
         run: |
           distinkt-dist --TRAVIS --targetdir=build
