@@ -34,7 +34,7 @@ jobs:
         with:
           name: build
           path: |
-            build
+            ./
 
   test:
     name: ${{ matrix.joblabel }}Perl ${{ matrix.perl }} on ${{ matrix.os }}
@@ -62,15 +62,18 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
       - name: Configure
+        working-directory: ./build/
         run: perl Makefile.PL
       - name: Install dependencies
-        run: cpanm -n --installdeps --with-recommends --with-suggests .
+        run: cpanm -n --installdeps --with-recommends --with-suggests ./build
       - name: Make
+        working-directory: ./build/
         run: make
       - name: Test (without coverage)
         if: ${{ !matrix.coverage }}
         env:
           EXTENDED_TESTING: 1
+        working-directory: ./build/
         run: |
           prove -b -r "t"
       - name: Install dependencies for coverage reports
@@ -81,23 +84,27 @@ jobs:
           cpanm -n Devel::Cover::Report::Codecov
       - name: Clean coverage data
         if: ${{ matrix.coverage }}
+        working-directory: ./build/
         run: cover -delete
       - name: Test (with coverage)
         if: ${{ matrix.coverage }}
         env:
           EXTENDED_TESTING: 1
           HARNESS_PERL_SWITCHES: -MDevel::Cover
+        working-directory: ./build/
         run: |
           prove -b -r "t"
       - name: Coveralls.io report
         if: ${{ matrix.coverage }}
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        working-directory: ./build/
         run: |
           cover -report coveralls
       - name: Codecov.io report
         if: ${{ matrix.coverage }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        working-directory: ./build/
         run: |
           cover -report codecov
