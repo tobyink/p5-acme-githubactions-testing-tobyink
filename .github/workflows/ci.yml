@@ -53,6 +53,8 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
+      - name: Show tree
+        run: tree
       - name: Configure
         working-directory: ./build
         run: perl Makefile.PL
