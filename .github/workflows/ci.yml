@@ -134,10 +134,10 @@ jobs:
         working-directory: ./build/
         run: gha-prove -b -r t
       - name: Coveralls.io report
-        if: matrix.coverage
+        if: success() && matrix.coverage
         working-directory: ./build/
         run: cover -report coveralls
       - name: Codecov.io report
-        if: matrix.coverage
+        if: success() && matrix.coverage
         working-directory: ./build/
         run: cover -report codecov
