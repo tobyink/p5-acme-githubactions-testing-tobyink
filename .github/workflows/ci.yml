@@ -41,8 +41,9 @@ jobs:
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
-      os: [ 'ubuntu-latest', 'macos-latest' ]
-      perl: [ '5.8', '5.30' ]
+      matrix:
+        os: [ 'ubuntu-latest', 'macos-latest' ]
+        perl: [ '5.8', '5.30' ]
     steps:
       - name: Get build artifact
         uses: actions/download-artifact@v2
