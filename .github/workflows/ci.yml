@@ -113,7 +113,7 @@ jobs:
       - name: Install dependencies
         run: |
           cpanm -n --installdeps ./build
-          cpanm https://cpan.metacpan.org/authors/id/T/TO/TOBYINK/App-GhaProve-0.001.tar.gz
+          cpanm https://cpan.metacpan.org/authors/id/T/TO/TOBYINK/App-GhaProve-0.002.tar.gz
       - name: Install extra dependencies
         if: ${{ matrix.extra_dependencies }}
         run: cpanm -n --installdeps --with-recommends --with-suggests ./build
