@@ -123,6 +123,7 @@ jobs:
         working-directory: ./build/
         run: cover -delete
       - name: Test suite
+        shell: bash
         working-directory: ./build/
         env:
           TESTING_MODE:   ${{ matrix.extended_testing }}
