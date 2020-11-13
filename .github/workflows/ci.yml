@@ -125,14 +125,14 @@ jobs:
           cpanm -n Devel::Cover::Report::Codecov
       - name: Make
         working-directory: ./build/
-        run: gha-prove
+        run: make
       - name: Clean coverage data
         if: ${{ matrix.coverage }}
         working-directory: ./build/
         run: cover -delete
       - name: Test suite
         working-directory: ./build/
-        run: make test
+        run: gha-prove
       - name: Coveralls.io report
         if: ${{ matrix.coverage }}
         working-directory: ./build/
