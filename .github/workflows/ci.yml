@@ -64,6 +64,8 @@ jobs:
         run: cat build/CREDITS
       - name: doap.ttl
         run: cat build/doap.ttl
+      - name: Makefile.PL
+        run: cat build/Makefile.PL
       - name: META.json
         run: cat build/META.json
       - name: META.yml
