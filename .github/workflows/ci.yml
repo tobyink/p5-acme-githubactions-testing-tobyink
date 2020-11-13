@@ -62,9 +62,52 @@ jobs:
       - name: Configure
         run: perl Makefile.PL
       - name: Install dependencies
-        run: cpanm --installdeps -n .
+        run: cpanm -n --installdeps --with-recommends --with-suggests .
       - name: Make
         run: make
-      - name: Test
+      - name: Test (without coverage)
+        env:
+          EXTENDED_TESTING: 1
         run: |
           prove -b -r "t"
+
+  coverage:
+    name: Coverage Reports
+    needs: dist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get dist artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+      - name: Set up perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl }}
+      - name: Configure
+        run: perl Makefile.PL
+      - name: Install dependencies
+        run: |
+          cpanm -n --installdeps --with-recommends --with-suggests .
+          cpanm Devel::Cover::Report::Coveralls
+          cpanm Devel::Cover::Report::Codecov
+      - name: Make
+        run: make
+      - name: Clean Coverage Data
+        run: cover -delete
+      - name: Test
+        env:
+          EXTENDED_TESTING: 1
+          HARNESS_PERL_SWITCHES: -MDevel::Cover
+        run: |
+          prove -b -r "t"
+      - name: Coveralls.io Report
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run: |
+          cover -report coveralls
+      - name: Codecov.io Report
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          cover -report codecov
