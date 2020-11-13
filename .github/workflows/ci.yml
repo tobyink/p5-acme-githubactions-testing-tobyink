@@ -59,8 +59,6 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
-      - name: Show tree
-        run: find | sort
       - name: Configure
         run: perl Makefile.PL
       - name: Install dependencies
