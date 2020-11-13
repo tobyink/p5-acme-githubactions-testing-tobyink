@@ -81,6 +81,7 @@ jobs:
         perl: [ '5.8', '5.10', '5.12', '5.14', '5.16', '5.18', '5.20', '5.22', '5.24', '5.26', '5.28', '5.30', '5.32' ]
         coverage: [ false ]
         extra_dependencies: [ true ]
+        extended_testing: [ 'both' ]
         exclude:
           - { os: 'windows', perl: '5.8' } 
           - { os: 'windows', perl: '5.10' } 
@@ -108,31 +109,28 @@ jobs:
       - name: Install extra dependencies
         if: ${{ matrix.extra_dependencies }}
         run: cpanm -n --installdeps --with-recommends --with-suggests ./build
-      - name: Make
-        working-directory: ./build/
-        run: make
-      - name: Test (without coverage)
-        if: ${{ !matrix.coverage }}
-        working-directory: ./build/
-        run: |
-          EXTENDED_TESTING=1 prove -b -r "t"
-      - name: Install dependencies for coverage reports
+      - name: Install coverage dependencies
         if: ${{ matrix.coverage }}
         run: |
           cpanm -n Devel::Cover
           cpanm -n Devel::Cover::Report::Coveralls
           cpanm -n Devel::Cover::Report::Codecov
+      - name: Make
+        working-directory: ./build/
+        run: make
       - name: Clean coverage data
         if: ${{ matrix.coverage }}
         working-directory: ./build/
         run: cover -delete
-      - name: Test (with coverage)
-        if: ${{ matrix.coverage }}
-        env: 
-          HARNESS_PERL_SWITCHES: -MDevel::Cover
+      - name: Test suite
         working-directory: ./build/
+        env:
+          TESTING_MODE:   ${{ matrix.extended_testing }}
+          TESTING_COVER:  ${{ matrix.coverage }}
         run: |
-          EXTENDED_TESTING=1 prove -b -r "t"
+          echo $TESTING_MODE
+          echo $TESTING_COVER
+          prove -b -r "t"
       - name: Coveralls.io report
         if: ${{ matrix.coverage }}
         env: 
