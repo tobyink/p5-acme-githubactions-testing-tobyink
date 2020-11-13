@@ -135,11 +135,15 @@ jobs:
           prove -b -r "t"
       - name: Coveralls.io report
         if: ${{ matrix.coverage }}
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         working-directory: ./build/
         run: |
           cover -report coveralls
       - name: Codecov.io report
         if: ${{ matrix.coverage }}
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         working-directory: ./build/
         run: |
           cover -report codecov
