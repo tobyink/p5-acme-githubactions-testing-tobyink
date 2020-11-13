@@ -42,7 +42,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'ubuntu-latest', 'macos-latest' ]
+        os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
         perl: [ '5.8', '5.30' ]
     steps:
       - name: Get dist artifact
