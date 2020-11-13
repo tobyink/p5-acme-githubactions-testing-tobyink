@@ -75,6 +75,11 @@ jobs:
     name: Perl ${{ matrix.perl }} ${{ matrix.os }} ${{ matrix.joblabel }}
     needs: dist
     runs-on: ${{ matrix.os }}-latest
+    env:
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+      CODECOV_TOKEN:        ${{ secrets.CODECOV_TOKEN }}
+      GHA_TESTING_MODE:     ${{ matrix.extended_testing }}
+      GHA_TESTING_COVER:    ${{ matrix.coverage }}
     strategy:
       fail-fast: false
       matrix:
@@ -106,7 +111,9 @@ jobs:
         working-directory: ./build/
         run: perl Makefile.PL
       - name: Install dependencies
-        run: cpanm -n --installdeps ./build
+        run: |
+          cpanm -n --installdeps ./build
+          cpanm https://cpan.metacpan.org/authors/id/T/TO/TOBYINK/App-GhaProve-0.001.tar.gz
       - name: Install extra dependencies
         if: ${{ matrix.extra_dependencies }}
         run: cpanm -n --installdeps --with-recommends --with-suggests ./build
@@ -118,30 +125,19 @@ jobs:
           cpanm -n Devel::Cover::Report::Codecov
       - name: Make
         working-directory: ./build/
-        run: make
+        run: gha-prove
       - name: Clean coverage data
         if: ${{ matrix.coverage }}
         working-directory: ./build/
         run: cover -delete
       - name: Test suite
-        shell: bash
         working-directory: ./build/
-        env:
-          TESTING_MODE:   ${{ matrix.extended_testing }}
-          TESTING_COVER:  ${{ matrix.coverage }}
-        run: |
-          echo $TESTING_MODE
-          echo $TESTING_COVER
-          prove -b -r "t"
+        run: make test
       - name: Coveralls.io report
         if: ${{ matrix.coverage }}
-        env: 
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
         working-directory: ./build/
         run: cover -report coveralls
       - name: Codecov.io report
         if: ${{ matrix.coverage }}
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         working-directory: ./build/
         run: cover -report codecov
