@@ -85,7 +85,6 @@ jobs:
           - { os: 'windows', perl: '5.10' } 
           - { os: 'windows', perl: '5.12' } 
           - { os: 'windows', perl: '5.14' } 
-          - { os: 'windows', perl: '5.16' } 
         include:
            - os: ubuntu
              perl: '5.30'
