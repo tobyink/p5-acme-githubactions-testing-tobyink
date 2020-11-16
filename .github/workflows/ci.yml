@@ -1,5 +1,7 @@
-name: Continuous Integration
-on: [push]
+name: CI
+on:
+  - push
+  - pull_request
 jobs:
   dist:
     name: Make distribution using Dist::Inkt
@@ -12,9 +14,9 @@ jobs:
         with:
           key: ${{ runner.os }}-dist-locallib
           path: ~/perl5
-      - name: Perl Version
+      - name: Perl version
         run: |
-          perl -V
+          perl -v
       - name: Install cpanm
         run: |
           curl -L https://cpanmin.us | perl - --sudo App::cpanminus
@@ -35,8 +37,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          path: |
-            ./
+          path: ./
   inspect:
     name: Inspect distribution
     needs: dist
@@ -71,26 +72,29 @@ jobs:
     needs: dist
     runs-on: ${{ matrix.os }}-latest
     env:
-      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      CODECOV_TOKEN:        ${{ secrets.CODECOV_TOKEN }}
       GHA_TESTING_MODE:     ${{ matrix.extended_testing }}
       GHA_TESTING_COVER:    ${{ matrix.coverage }}
+      GHA_INSTALL_EXTRAS:   ${{ matrix.extra_dependencies }}
     strategy:
       fail-fast: true
       matrix:
-        os:                 [ 'ubuntu', 'macos', 'windows' ]
-        perl:               [ '5.8', '5.10', '5.12', '5.14', '5.16', '5.18', '5.20', '5.22', '5.24', '5.26', '5.28', '5.30', '5.32' ]
+        os:                 [ 'ubuntu' ]
+        perl:               [ '5.24', 'latest' ]
+        threaded:           [ false ]
         coverage:           [ false ]
         extra_dependencies: [ true ]
-        extended_testing:   [ 'both' ]
+        extended_testing:   [ 'extended' ]
         exclude:
           - { os: 'windows', perl: '5.8' }
           - { os: 'windows', perl: '5.10' }
           - { os: 'windows', perl: '5.12' }
         include:
-          - os: ubuntu
+          - os: 'ubuntu'
             perl: '5.30'
+            threaded: false
             coverage: true
+            extra_dependencies: true
+            extended_testing: 'extended'
             joblabel: '(Coverage)'
     steps:
       - name: Get dist artifact
@@ -101,16 +105,20 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
+          multi-thread: ${{ matrix.threaded }}
+      - name: Perl version
+        run: |
+          perl -v
       - name: Configure
         working-directory: ./build/
         run: perl Makefile.PL
       - name: Install dependencies
         run: |
-          cpanm -n --installdeps ./build
           cpanm App::GhaProve
+          cpanm -n --installdeps ./build
       - name: Install extra dependencies
         if: matrix.extra_dependencies || matrix.coverage
-        run: cpanm -n --installdeps --with-recommends --with-suggests ./build
+        run: cpanm -n --installdeps --with-recommends --with-suggests ./build || true
       - name: Install coverage dependencies
         if: matrix.coverage
         run: |
@@ -132,8 +140,12 @@ jobs:
       - name: Coveralls.io report
         if: success() && matrix.coverage
         working-directory: ./build/
-        run: cover -report coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run: cover -select_re '^blib/lib/' -report coveralls
       - name: Codecov.io report
         if: success() && matrix.coverage
         working-directory: ./build/
-        run: cover -report codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: cover -select_re '^blib/lib/' -report codecov
