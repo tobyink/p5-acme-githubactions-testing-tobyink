@@ -107,20 +107,24 @@ jobs:
           perl-version: ${{ matrix.perl }}
           multi-thread: ${{ matrix.threaded }}
       - name: Perl version
-        run: perl -v
-      - name: Install App::GhaInstall
-        shell: bash
         run: |
-          curl -s "https://raw.githubusercontent.com/tobyink/p5-app-ghainstall/master/devel.fatpack/gha-install" > "$HOME/gha-install"
-      - name: Install configuration dependencies
-        working-directory: ./build/
-        run: perl "$HOME/gha-install" -- --configure
+          perl -v
       - name: Configure
         working-directory: ./build/
         run: perl Makefile.PL
       - name: Install dependencies
-        working-directory: ./build/
-        run: perl "$HOME/gha-install" -- --auto
+        run: |
+          cpanm App::GhaProve
+          cpanm -n --installdeps ./build
+      - name: Install extra dependencies
+        if: matrix.extra_dependencies || matrix.coverage
+        run: cpanm -n --installdeps --with-recommends --with-suggests ./build || true
+      - name: Install coverage dependencies
+        if: matrix.coverage
+        run: |
+          cpanm -n Devel::Cover
+          cpanm -n Devel::Cover::Report::Coveralls
+          cpanm -n Devel::Cover::Report::Codecov
       - name: Make
         working-directory: ./build/
         run: make
