@@ -70,7 +70,7 @@ jobs:
   test:
     name: Perl ${{ matrix.perl }} ${{ matrix.os }} ${{ matrix.joblabel }}
     needs: dist
-    runs-on: ${{ ( matrix.os=='strawberry' && 'windows' ) || matrix.os }}
+    runs-on: ${{ ( matrix.os=='strawberry' && 'windows' ) || matrix.os }}-latest
     env:
       GHA_TESTING_MODE:     ${{ matrix.extended_testing }}
       GHA_TESTING_COVER:    ${{ matrix.coverage }}
