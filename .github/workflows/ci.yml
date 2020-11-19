@@ -118,7 +118,7 @@ jobs:
         run: perl Makefile.PL
       - name: Install dependencies
         run: |
-          cpanm App::GhaProve
+          cpanm -n App::GhaProve
           cpanm -n --installdeps ./build
       - name: Install extra dependencies
         if: matrix.extra_dependencies || matrix.coverage
@@ -131,7 +131,7 @@ jobs:
           cpanm -n Devel::Cover::Report::Codecov
       - name: Make
         working-directory: ./build/
-        run: make
+        run: make --debug
       - name: Clean coverage data
         if: matrix.coverage
         working-directory: ./build/
