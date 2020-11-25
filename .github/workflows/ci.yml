@@ -107,7 +107,7 @@ jobs:
         with:
           name: dist
       - name: Set up perl
-        uses: shogo82148/actions-setup-perl@1feb0cba29fd3c51c56b7fc49d4d5ecf9945e177
+        uses: shogo82148/actions-setup-perl
         with:
           perl-version: ${{ matrix.perl }}
           multi-thread: ${{ ( ( startsWith(matrix.os, 'windows') || endsWith(matrix.os, ':thr') ) && true ) || false }}
