@@ -126,7 +126,7 @@ jobs:
           cpanm -n Devel::Cover::Report::Codecov
       - name: Make
         working-directory: ./build/
-        run: $MAKE --debug
+        run: perl -MConfig -e'exec $Config{make}'
       - name: Clean coverage data
         if: matrix.coverage
         working-directory: ./build/
