@@ -105,40 +105,26 @@ jobs:
           perl-version: ${{ matrix.perl }}
           multi-thread: ${{ ( ( startsWith(matrix.os, 'windows') || endsWith(matrix.os, ':thr') ) && true ) || false }}
           distribution: ${{ ( endsWith(matrix.os, ':strawberry') && 'strawberry' ) || 'default' }}
-      - name: Detect environment
-        id: detect-environment
-        run: |
-          perl -MConfig -e'print q[::set-output name=MAKE::] . $Config{make} . $/'
       - name: Perl version
         run: |
           perl -v
       - name: Configure
         working-directory: ./build/
-        env:
-          MAKE: ${{ steps.detect-environment.outputs.MAKE }}
         run: perl Makefile.PL
       - name: Install dependencies
-        env:
-          MAKE: ${{ steps.detect-environment.outputs.MAKE }}
         run: |
           cpanm -n App::GhaProve
           cpanm -n --installdeps ./build
       - name: Install extra dependencies
         if: matrix.extra_dependencies || matrix.coverage
-        env:
-          MAKE: ${{ steps.detect-environment.outputs.MAKE }}
         run: cpanm -n --installdeps --with-recommends --with-suggests ./build || true
       - name: Install coverage dependencies
         if: matrix.coverage
-        env:
-          MAKE: ${{ steps.detect-environment.outputs.MAKE }}
         run: |
           cpanm -n Devel::Cover
           cpanm -n Devel::Cover::Report::Coveralls
           cpanm -n Devel::Cover::Report::Codecov
       - name: Make
-        env:
-          MAKE: ${{ steps.detect-environment.outputs.MAKE }}
         working-directory: ./build/
         run: $MAKE --debug
       - name: Clean coverage data
