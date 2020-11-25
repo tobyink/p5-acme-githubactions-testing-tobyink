@@ -94,20 +94,13 @@ jobs:
             extra_dependencies: true
             extended_testing: #COVERAGE_EXTENDED_TESTIN:G#
             joblabel: '(Coverage)'
-          - { os: 'ubuntu-16.04', perl: '5.6.0' }
-          - { os: 'ubuntu-16.04', perl: '5.6.1' }
-          - { os: 'ubuntu-16.04', perl: '5.6.2' }
-          - { os: 'ubuntu-16.04', perl: '5.8.0' }
-          - { os: 'ubuntu-16.04', perl: '5.8.1' }
-          - { os: 'ubuntu-16.04', perl: '5.8.2' }
-          - { os: 'ubuntu-16.04', perl: '5.8.3' }
     steps:
       - name: Get dist artifact
         uses: actions/download-artifact@v2
         with:
           name: dist
       - name: Set up perl
-        uses: shogo82148/actions-setup-perl@main
+        uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
           multi-thread: ${{ ( ( startsWith(matrix.os, 'windows') || endsWith(matrix.os, ':thr') ) && true ) || false }}
