@@ -76,7 +76,7 @@ jobs:
       GHA_TESTING_COVER:    ${{ matrix.coverage }}
       GHA_INSTALL_EXTRAS:   ${{ matrix.extra_dependencies }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os:                 [ 'ubuntu:default', 'ubuntu:thr', 'ubuntu-16.04', 'macos:default', 'macos:thr', 'macos-11.0', 'windows:default', 'windows:strawberry' ]
         perl:               [ '5.24', 'latest' ]
