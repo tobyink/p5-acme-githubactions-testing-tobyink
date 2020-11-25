@@ -140,7 +140,7 @@ jobs:
         env:
           MAKE: ${{ steps.detect-environment.outputs.MAKE }}
         working-directory: ./build/
-        run: $MAKE
+        run: $MAKE --debug
       - name: Clean coverage data
         if: matrix.coverage
         working-directory: ./build/
