@@ -85,6 +85,7 @@ jobs:
         extra_dependencies: [ true ]
         extended_testing:   [ false ]
         exclude:
+          - { os: 'windows-latest', perl: '5.4' }
         include:
           - os: 'ubuntu-latest'
             perl: '5.30'
