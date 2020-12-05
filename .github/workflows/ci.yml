@@ -108,9 +108,6 @@ jobs:
       - name: Perl version
         run: |
           perl -v
-      - name: Configure
-        working-directory: ./build/
-        run: perl Makefile.PL
       - name: Install dependencies
         run: |
           cpanm -n App::GhaProve
@@ -124,6 +121,9 @@ jobs:
           cpanm -n Devel::Cover
           cpanm -n Devel::Cover::Report::Coveralls
           cpanm -n Devel::Cover::Report::Codecov
+      - name: Configure
+        working-directory: ./build/
+        run: perl Makefile.PL
       - name: Make
         working-directory: ./build/
         run: perl -MConfig -e'exec $Config{make}'
