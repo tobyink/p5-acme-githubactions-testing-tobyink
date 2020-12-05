@@ -68,7 +68,7 @@ jobs:
       - name: META.yml
         run: cat build/META.yml
   test:
-    name: Perl ${{ matrix.perl }} ${{ matrix.os }} [thr=${{ matrix.threaded }}]${{ ( matrix.extended_testing && '[XT]' ) || '' }} ${{ matrix.joblabel }}
+    name: Perl ${{ matrix.perl }} ${{ matrix.os }} [thr=${{ matrix.threaded }}] ${{ matrix.joblabel }}
     needs: dist
     runs-on: ${{ ( ( matrix.os == 'strawberry') && 'windows-latest' ) || matrix.os }}
     env:
@@ -79,22 +79,19 @@ jobs:
       fail-fast: false
       matrix:
         os:                 [ 'ubuntu-latest', 'windows-latest', 'macos-latest' ]
-        perl:               [ '5.24', 'latest' ]
+        perl:               [ 5.6.1, 5.6.2, 5.8.0, 5.8.1, 5.8.9, 5.10.0, 5.10.1, 5.12, 5.24, 'latest' ]
         coverage:           [ false ]
         threaded:           [ true, false, null ]
         extra_dependencies: [ true ]
-        extended_testing:   [ true, false ]
+        extended_testing:   [ false ]
         exclude:
-          - { os: 'windows-latest', perl: '5.8' }
-          - { os: 'windows-latest', perl: '5.10' }
-          - { os: 'windows-latest', perl: '5.12' }
         include:
           - os: 'ubuntu-latest'
             perl: '5.30'
             threaded: false
             coverage: true
             extra_dependencies: true
-            extended_testing: 'both'
+            extended_testing: false
             joblabel: '(Coverage)'
     steps:
       - name: Get dist artifact
